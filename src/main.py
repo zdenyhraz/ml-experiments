@@ -12,5 +12,5 @@ if __name__ == "__main__":
 
   model = RegressionModel()
   model.train(train_dataset=train_dataset, test_dataset=test_dataset,
-              num_epochs=50, batch_size=16, learning_rate=0.001)
+              num_epochs=100, batch_size=16, learning_rate=0.001)
   model.eval(func=TargetFunction1)

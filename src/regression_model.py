@@ -52,7 +52,7 @@ class RegressionModel(nn.Module):
         epoch_loss_test = epoch_loss_test/(batch_idx_test+1)
         epoch_losses_test.append(epoch_loss_test)
 
-      print(f"epoch {epoch} | loss_train: {epoch_loss_train:.3f} | loss_test: {epoch_loss_test:.3f}")
+      #print(f"epoch {epoch} | loss_train: {epoch_loss_train:.3f} | loss_test: {epoch_loss_test:.3f}")
 
       plt.clf()
       plt.plot(epoch_losses_train, label="train loss")
