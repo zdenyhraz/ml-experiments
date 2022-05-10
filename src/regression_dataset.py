@@ -6,7 +6,6 @@ import numpy as np
 class RegressionDataset(Dataset):
 
   def __init__(self, func, n, x_min=0, x_max=1):
-    print(f"Initializing RegressionDataset (n={n})")
     self.inputs = []
     self.targets = []
     for idx in range(n):
@@ -14,9 +13,6 @@ class RegressionDataset(Dataset):
       y = func(x)
       self.inputs.append(x)
       self.targets.append(y)
-
-    print(
-        f"Regression dataset created ({len(self.inputs)} {self.inputs[0].shape} inputs, {len(self.targets)} {self.targets[0].shape} targets)")
 
   def __len__(self):
     return len(self.inputs)

@@ -63,15 +63,24 @@ class RegressionModel(nn.Module):
       plt.tight_layout()
       plt.pause(1e-9)
 
-  def eval(self, func, x_min=0, x_max=1, n=301):
+  def eval(self, func, train_dataset, x_min=0, x_max=1, n=301):
     with torch.no_grad():
       x = torch.linspace(x_min, x_max, n).reshape(n, -1)
       target = func(x)
       output = self.forward(x)
 
+      train_inputs = []
+      train_targets = []
+      for batch_inputs, batch_targets in DataLoader(dataset=train_dataset, batch_size=1, shuffle=True):
+        for single_input in batch_inputs:
+          train_inputs.append(single_input.item())
+        for single_target in batch_targets:
+          train_targets.append(single_target.item())
+
       plt.figure()
       plt.plot(x, target, label="target function")
       plt.plot(x, output, label="regression model")
+      plt.scatter(train_inputs, train_targets, label="train data", marker="x", c="m", linewidth=2)
       plt.xlabel("input")
       plt.ylabel("output")
       plt.legend()
