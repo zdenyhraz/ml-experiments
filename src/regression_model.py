@@ -21,34 +21,59 @@ class RegressionModel(nn.Module):
     x = self.fc4(x)  # regression - no relu at the end
     return x
 
-  def train(self, train_dataset):
-    batch_size = 16
-    learning_rate = 0.001
-    num_epochs = 100
+  def train(self, train_dataset, test_dataset, num_epochs=50, batch_size=16, learning_rate=0.001):
     criterion = nn.MSELoss()
     optimizer = optim.Adam(self.parameters(), lr=learning_rate)
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
+    epoch_losses_train = []
+    epoch_losses_test = []
+    plt.figure()
 
     for epoch in range(num_epochs):
-      for batch_idx, (inputs, targets) in enumerate(train_loader):
+      epoch_loss_train = 0.0
+      for batch_idx_train, (inputs, targets) in enumerate(train_loader):
+        optimizer.zero_grad()
         pred = self.forward(inputs)
         loss = criterion(pred, targets)
-        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        epoch_loss_train += loss.item()
+      epoch_loss_train = epoch_loss_train/(batch_idx_train+1)
+      epoch_losses_train.append(epoch_loss_train)
 
-      print(f"epoch {epoch} | loss: {loss.item()}")
+      with torch.no_grad():
+        epoch_loss_test = 0.0
+        for batch_idx_test, (inputs, targets) in enumerate(test_loader):
+          optimizer.zero_grad()
+          pred = self.forward(inputs)
+          loss = criterion(pred, targets)
+          epoch_loss_test += loss.item()
+        epoch_loss_test = epoch_loss_test/(batch_idx_test+1)
+        epoch_losses_test.append(epoch_loss_test)
 
-  def eval(self, func):
+      print(f"epoch {epoch} | loss_train: {epoch_loss_train:.3f} | loss_test: {epoch_loss_test:.3f}")
+
+      plt.clf()
+      plt.plot(epoch_losses_train, label="train loss")
+      plt.plot(epoch_losses_test, label="test loss")
+      plt.xlabel("epoch")
+      plt.ylabel("loss")
+      plt.legend()
+      plt.tight_layout()
+      plt.pause(1e-9)
+
+  def eval(self, func, x_min=0, x_max=1, n=301):
     with torch.no_grad():
-      n = 301
-      x = torch.linspace(0, 1, n).reshape(n, -1)
+      x = torch.linspace(x_min, x_max, n).reshape(n, -1)
       target = func(x)
       output = self.forward(x)
 
-      plt.plot(x, target, label="Target function")
+      plt.figure()
+      plt.plot(x, target, label="target function")
       plt.plot(x, output, label="regression model")
       plt.xlabel("input")
       plt.ylabel("output")
       plt.legend()
+      plt.tight_layout()
       plt.show()

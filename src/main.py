@@ -1,17 +1,16 @@
-import torch
 from regression_model import RegressionModel
 from regression_dataset import RegressionDataset
-
-
-def TargetFunction(x):
-  return torch.exp(-20. * torch.pow(x - 0.3, 2)) + 3. * torch.exp(-100. * torch.pow(x - 0.7, 2)) + 0.2 * torch.exp(-50. *
-                                                                                                                   torch.pow(x - 0.3, 2)) * torch.sin(x * 6.28 * 50)
-
+from regression_testfunctions import TargetFunction1
+from matplotlib_init import matplotlib_init
 
 if __name__ == "__main__":
+  matplotlib_init()
   train_size = 256
-  train_dataset = RegressionDataset(func=TargetFunction, n=train_size)
+  test_size = 64
+  train_dataset = RegressionDataset(func=TargetFunction1, n=train_size)
+  test_dataset = RegressionDataset(func=TargetFunction1, n=test_size)
 
   model = RegressionModel()
-  model.train(train_dataset=train_dataset)
-  model.eval(func=TargetFunction)
+  model.train(train_dataset=train_dataset, test_dataset=test_dataset,
+              num_epochs=50, batch_size=16, learning_rate=0.001)
+  model.eval(func=TargetFunction1)
