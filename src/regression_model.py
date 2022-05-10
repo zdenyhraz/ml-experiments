@@ -80,7 +80,7 @@ class RegressionModel(nn.Module):
       plt.figure()
       plt.plot(x, target, label="target function")
       plt.plot(x, output, label="regression model")
-      plt.scatter(train_inputs, train_targets, label="train data", marker="x", c="m", linewidth=2)
+      plt.scatter(train_inputs, train_targets, label="train data", marker="x", c="m", linewidth=2, zorder=2)
       plt.xlabel("input")
       plt.ylabel("output")
       plt.legend()
