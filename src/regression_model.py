@@ -9,16 +9,18 @@ from torch.utils.data import DataLoader
 class RegressionModel(nn.Module):
   def __init__(self, input_size=1, output_size=1):
     super(RegressionModel, self).__init__()
-    self.fc1 = nn.Linear(input_size, 128)
-    self.fc2 = nn.Linear(128, 64)
-    self.fc3 = nn.Linear(64, 32)
-    self.fc4 = nn.Linear(32, output_size)
+    self.fc1 = nn.Linear(input_size, 256)
+    self.fc2 = nn.Linear(256, 128)
+    self.fc3 = nn.Linear(128, 64)
+    self.fc4 = nn.Linear(64, 32)
+    self.fc5 = nn.Linear(32, output_size)
 
   def forward(self, x):
     x = func.relu(self.fc1(x))
     x = func.relu(self.fc2(x))
     x = func.relu(self.fc3(x))
-    x = self.fc4(x)  # regression - no relu at the end
+    x = func.relu(self.fc4(x))
+    x = self.fc5(x)  # regression - no relu at the end
     return x
 
   def train(self, train_dataset, test_dataset, num_epochs=50, batch_size=16, learning_rate=0.001):
@@ -71,7 +73,8 @@ class RegressionModel(nn.Module):
 
       train_inputs = []
       train_targets = []
-      for batch_inputs, batch_targets in DataLoader(dataset=train_dataset, batch_size=1, shuffle=True):
+      for batch_inputs, batch_targets in DataLoader(
+              dataset=train_dataset, batch_size=1, shuffle=True):
         for single_input in batch_inputs:
           train_inputs.append(single_input.item())
         for single_target in batch_targets:
@@ -80,7 +83,8 @@ class RegressionModel(nn.Module):
       plt.figure()
       plt.plot(x, target, label="target function")
       plt.plot(x, output, label="regression model")
-      plt.scatter(train_inputs, train_targets, label="train data", marker="x", c="m", linewidth=2, zorder=2)
+      plt.scatter(train_inputs, train_targets, label="train data",
+                  marker="x", c="m", linewidth=2, zorder=2)
       plt.xlabel("input")
       plt.ylabel("output")
       plt.legend()
